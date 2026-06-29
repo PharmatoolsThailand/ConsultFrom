@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แบบฟอร์มปรึกษาปัญหาการใช้ยา — FM-PTC-011</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="page-wrap">
+
+    <header class="app-header">
+      <div class="titles">
+        <h1>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M9 11h6"></path><path d="M9 15h6"></path></svg>
+          แบบฟอร์มปรึกษาปัญหาการใช้ยา
+        </h1>
+        <p class="subtitle">FM-PTC-011 · กลุ่มงานเภสัชกรรม โรงพยาบาลสมเด็จพระยุพราชเดชอุดม</p>
+      </div>
+      <div class="app-actions">
+        <button id="btnLoad" class="btn btn-ghost">ดึงด้วยเลขฟอร์ม</button>
+        <button id="btnSave" class="btn btn-secondary">บันทึกลง Sheet</button>
+        <button id="btnPrint" class="btn btn-primary">ออกเลข &amp; พิมพ์</button>
+        <button id="btnClear" class="btn btn-ghost">ล้าง</button>
+      </div>
+    </header>
+
+    <div class="sheet" style="width:794px;min-height:1123px;margin:24px auto;background:#fff;box-shadow:0 8px 40px rgba(0,0,0,.35);padding:40px 46px 44px;color:#111;font-size:17px;line-height:1.55;">
+
+      <!-- HEADER -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:17px;font-weight:600;">
+          <span>เลขที่ฟอร์ม:&nbsp;<span data-f="formNo" style="font-weight:700;">—</span></span>
+          <span>FM-PTC-011</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:1px;">
+          <img src="assets/images/logo.png" alt="โลโก้โรงพยาบาล" style="width:74px;height:auto;flex:0 0 auto;">
+          <div style="flex:1 1 auto;font-size:19px;font-weight:700;line-height:1.25;">แบบฟอร์มปรึกษาปัญหาการใช้ยากลุ่มงานเภสัชกรรม โรงพยาบาลสมเด็จพระยุพราชเดชอุดม</div>
+          <div style="flex:0 0 auto;align-self:flex-start;border:1px solid #111;padding:4px 12px 7px;font-size:15px;line-height:1.4;">
+            <div style="font-weight:600;margin-bottom:2px;">ประเภทผู้ป่วย</div>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" data-f="ptype" data-v="ผู้ป่วยนอก" style="width:13px;height:13px;accent-color:#111;margin:0;">ผู้ป่วยนอก</label>
+            <label style="display:flex;align-items:center;gap:6px;margin-top:2px;cursor:pointer;"><input type="checkbox" data-f="ptype" data-v="ผู้ป่วยใน" style="width:13px;height:13px;accent-color:#111;margin:0;">ผู้ป่วยใน</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- เรียน / วันที่ -->
+      <div style="display:flex;gap:18px;margin-top:6px;align-items:baseline;">
+        <div style="flex:1;display:flex;align-items:baseline;gap:6px;">
+          <span style="white-space:nowrap;">เรียน</span>
+          <input type="text" style="flex:1;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:0 2px 1px;">
+        </div>
+        <div style="flex:0 0 auto;display:flex;align-items:baseline;gap:6px;">
+          <span style="white-space:nowrap;">วันที่</span>
+          <input type="text" data-f="date" style="width:130px;text-align:center;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:0 2px 1px;">
+          <input type="date" id="datePicker" class="date-pick no-print" aria-label="เลือกวันที่">
+        </div>
+      </div>
+
+      <!-- ชื่อ-สกุล row -->
+      <div style="display:flex;gap:10px;margin-top:5px;align-items:baseline;flex-wrap:nowrap;">
+        <span style="white-space:nowrap;">ชื่อ – สกุล ผู้ป่วย</span>
+        <input type="text" data-name-field="1" data-f="name" style="flex:1 1 auto;min-width:60px;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:0 2px 1px;text-overflow:clip;">
+        <span style="white-space:nowrap;">HN</span>
+        <input type="text" data-f="hn" style="width:84px;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:0 2px 1px;">
+        <span style="white-space:nowrap;">ตึก</span>
+        <input type="text" data-f="ward" style="width:60px;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:0 2px 1px;">
+        <span style="white-space:nowrap;">Age</span>
+        <input type="text" data-f="age" style="width:42px;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:0 2px 1px;">
+        <span style="white-space:nowrap;">Weight</span>
+        <input type="text" data-f="weight" style="width:52px;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:0 2px 1px;">
+      </div>
+
+      <!-- ความคลาดเคลื่อนทางยา : two-column box -->
+      <div style="display:flex;border:1px solid #111;margin-top:6px;">
+        <!-- LEFT: DRPs -->
+        <div style="flex:1;border-right:1px solid #111;">
+          <div style="font-weight:700;font-size:16.5px;text-align:center;padding:5px 6px;border-bottom:1px solid #111;background:#f2f2f2;">ความคลาดเคลื่อนทางยา : ที่จัดเป็น DRPs</div>
+          <div style="padding:8px 10px;font-size:16px;line-height:1.3;">
+            <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:3px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>ผู้ป่วยได้รับยาที่ไม่จำเป็น ไม่มีข้อบ่งใช้</span></label>
+            <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:3px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>ผู้ป่วยได้รับยาซ้ำซ้อน</span></label>
+            <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:3px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>ผู้ป่วยไม่ได้รับยาที่ควรจะได้รับ</span></label>
+            <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:3px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>ผู้ป่วยมีความจำเป็นต้องได้รับยา แต่มีการเลือกใช้ยาไม่เหมาะสม <br>(รูปแบบ /ขนาด/วิธีใช้/วิถีทางให้ยา)</span></label>
+            <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:3px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>ผู้ป่วยได้รับยาในขนาดที่น้อยเกินไป</span></label>
+            <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:3px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>ผู้ป่วยได้รับยาในขนาดที่มากเกินไป</span></label>
+            <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:2px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>ผู้ป่วยเกิดอาการไม่พึงประสงค์จากยา (ADR)</span></label>
+            <div style="padding-left:20px;margin-bottom:6px;">
+              <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:3px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>มีประวัติแพ้ยาที่ได้รับ ( รายเก่า / รายใหม่ )</span></label>
+              <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:3px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>Cross Allergy</span></label>
+              <label style="display:flex;gap:7px;align-items:flex-start;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>G-6-PD</span></label>
+            </div>
+            <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:3px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>Drug interaction<br>( Drug – Drug, Drug – disease, Drug – Food )</span></label>
+            <label style="display:flex;gap:7px;align-items:flex-start;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>ความไม่ร่วมมือในการใช้ยาของผู้ป่วย</span></label>
+          </div>
+        </div>
+        <!-- RIGHT: อื่นๆ -->
+        <div style="flex:1;display:flex;flex-direction:column;">
+          <div style="font-weight:700;font-size:16.5px;text-align:center;padding:5px 6px;border-bottom:1px solid #111;background:#f2f2f2;">ความคลาดเคลื่อนทางยา : อื่นๆ</div>
+          <div style="padding:8px 10px;font-size:16px;line-height:1.3;display:flex;flex-direction:column;flex:1;">
+            <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:3px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>สั่งยาผิดคน</span></label>
+            <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:3px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>สั่งใช้ยาผิดจำนวน / ไม่ถึงนัด</span></label>
+            <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:3px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>เขียนคำสั่งใช้ยาไม่สมบูรณ์</span></label>
+            <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:3px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>สั่งอุปกรณ์กับยาไม่ตรงกัน</span></label>
+            <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:3px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>ไม่สั่งตรวจ Lab ตามแนวทางการใช้ยา</span></label>
+            <label style="display:flex;gap:7px;align-items:flex-start;margin-bottom:7px;cursor:pointer;"><input type="checkbox" data-f="error" style="width:13px;height:13px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span style="white-space:nowrap;">อื่นๆ (ระบุ)</span></label>
+            <div class="ruled-wrap" style="flex:1;display:flex;min-height:96px;">
+              <div class="ruled-lines" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <textarea data-f="otherDetail" rows="7" style="flex:1;width:100%;border:0;outline:none;background-color:transparent;font-size:16px;line-height:26px;padding:0;min-height:96px;display:block;position:relative;z-index:1;"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOWER BORDERED SECTION -->
+      <div style="border:1px solid #111;margin-top:-1px;">
+
+        <!-- Cell 1: รายละเอียดอุบัติการณ์เพิ่มเติม -->
+        <div style="padding:6px 12px 6px;">
+          <div style="font-weight:600;">รายละเอียดอุบัติการณ์เพิ่มเติม</div>
+          <div class="tpl-bar no-print">
+            <select id="tplSelect" class="tpl-select"><option value="">— เลือก Template —</option></select>
+            <button id="btnTplReload" class="tpl-btn" type="button" title="ดึง/อัปเดต Template ล่าสุดจากชีต">⟳ รีโหลด</button>
+            <button id="btnTplSave" class="tpl-btn" type="button">+ บันทึกใหม่</button>
+            <button id="btnTplDelete" class="tpl-btn tpl-del" type="button">ลบ</button>
+            <button id="btnClearDetail" class="tpl-btn tpl-muted" type="button" title="ล้างเฉพาะช่องรายละเอียดอุบัติการณ์เพิ่มเติม">ล้างรายละเอียด</button>
+          </div>
+          <div class="ruled-wrap" style="margin-top:2px;min-height:182px;">
+            <div class="ruled-lines" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <textarea data-f="detail" rows="7" style="width:100%;border:0;outline:none;background-color:transparent;font-size:17px;line-height:26px;padding:0;min-height:182px;display:block;position:relative;z-index:1;"></textarea>
+          </div>
+          <div style="text-align:right;font-weight:600;line-height:1.2;margin-top:0;">เรียนแพทย์พิจารณา<br>ขอบคุณค่ะ/ครับ</div>
+        </div>
+
+        <!-- Cell 2: ผลการปรึกษาปัญหาการใช้ยา -->
+        <div style="border-top:1px solid #111;padding:4px 12px 4px;">
+          <div style="font-weight:700;margin-bottom:2px;">ผลการปรึกษาปัญหาการใช้ยา</div>
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer;"><input type="checkbox" data-f="result" data-v="แพทย์เปลี่ยนแปลงคำสั่งการใช้ยา" style="width:14px;height:14px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span style="white-space:nowrap;">แพทย์เปลี่ยนแปลงคำสั่งการใช้ยาดังนี้</span></label>
+          <input type="text" data-f="resultDetail" style="width:100%;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:1px 2px 2px;margin:1px 0 3px;">
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer;"><input type="checkbox" data-f="result" data-v="แพทย์ยืนยันคำสั่งการใช้" style="width:14px;height:14px;accent-color:#111;margin:3px 0 0;flex:0 0 auto;"><span>แพทย์ยืนยันคำสั่งการใช้&nbsp; : ต้องการปรับแผนการรักษา/ ต้องการ Rechalange / อื่นๆ</span></label>
+          <input type="text" data-f="resultDetail" style="width:100%;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:1px 2px 2px;margin:1px 0 1px;">
+        </div>
+
+        <!-- Cell 3: signatures -->
+        <div style="border-top:1px solid #111;padding:4px 18px 3px;display:flex;gap:24px;">
+          <div style="flex:1;text-align:center;">
+            <input type="text" data-f="pharmacist" list="pharmacistList" style="width:80%;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;text-align:center;font-size:17px;padding:0 4px 2px;">
+            <datalist id="pharmacistList"></datalist>
+            <div style="font-size:16px;margin-top:2px;">เภสัชกรผู้ส่งปรึกษา</div>
+          </div>
+          <div style="flex:1;text-align:center;">
+            <input type="text" data-f="doctor" style="width:80%;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;text-align:center;font-size:17px;padding:0 4px 2px;">
+            <div style="font-size:16px;margin-top:2px;">แพทย์ผู้รับ consult</div>
+          </div>
+        </div>
+
+        <!-- Cell 4: กรุณาส่ง -->
+        <div style="border-top:1px solid #111;text-align:center;font-weight:700;padding:3px 12px;">กรุณาส่งแบบฟอร์มนี้กลับคืนห้องจ่ายยาทุกครั้งเมื่อแพทย์ลงความเห็นแล้ว</div>
+
+      </div>
+
+    </div>
+  </div>
+  <div id="loadModal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-head">
+        <span>ดึงข้อมูลผู้ป่วยที่บันทึกไว้</span>
+        <button id="loadModalClose" class="modal-x" aria-label="ปิด">✕</button>
+      </div>
+      <input id="loadSearch" class="modal-search" type="text" placeholder="ค้นหาด้วยเลขฟอร์ม หรือ ชื่อ-สกุลผู้ป่วย…">
+      <div id="loadList" class="modal-list"></div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/ui-handler.js"></script>
+  <script src="js/sheet-sync.js"></script>
+  <script src="js/templates.js"></script>
+</body>
+</html>
