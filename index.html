@@ -51,7 +51,7 @@
       <div style="display:flex;gap:18px;margin-top:6px;align-items:baseline;">
         <div style="flex:1;display:flex;align-items:baseline;gap:6px;">
           <span style="white-space:nowrap;">เรียน</span>
-          <input type="text" style="flex:1;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:0 2px 1px;">
+          <input type="text" id="fldTo" style="flex:1;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:0 2px 1px;">
         </div>
         <div style="flex:0 0 auto;display:flex;align-items:baseline;gap:6px;">
           <span style="white-space:nowrap;">วันที่</span>
@@ -67,7 +67,8 @@
         <span style="white-space:nowrap;">HN</span>
         <input type="text" data-f="hn" style="width:84px;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:0 2px 1px;">
         <span style="white-space:nowrap;">ตึก</span>
-        <input type="text" data-f="ward" style="width:60px;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:0 2px 1px;">
+        <input type="text" data-f="ward" list="wardList" style="width:60px;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:0 2px 1px;">
+        <datalist id="wardList"></datalist>
         <span style="white-space:nowrap;">Age</span>
         <input type="text" data-f="age" style="width:42px;border:0;border-bottom:1px dotted #111;outline:none;background:transparent;font-size:17px;padding:0 2px 1px;">
         <span style="white-space:nowrap;">Weight</span>

@@ -158,25 +158,47 @@
       r.names.forEach(function (n) { var o = document.createElement('option'); o.value = n; dl.appendChild(o); });
     }).catch(function () {});
   }
+  // เติมชื่อหอผู้ป่วยลง datalist (แก้รายการได้ในชีต "Wards")
+  function loadWards() {
+    var u = url(); if (!u) return;
+    fetchJSON(u + '?action=wards').then(function (r) {
+      var dl = document.getElementById('wardList');
+      if (!dl || !r || !r.ok || !r.wards) return;
+      dl.innerHTML = '';
+      r.wards.forEach(function (n) { var o = document.createElement('option'); o.value = n; dl.appendChild(o); });
+    }).catch(function () {});
+  }
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
     });
   }
 
-  // ต้องมีชื่อผู้ป่วยก่อน จึงจะออกเลข/สร้างแถวใหม่ (กันเลขฟอร์มมั่วตอนไม่มีข้อมูล)
-  function hasData() {
+  // บังคับกรอกช่องจำเป็นก่อนบันทึก/พิมพ์ — คืนรายการช่องที่ยังไม่กรอก (ว่าง = ผ่าน)
+  function validate() {
     var d = collect();
-    return !!(d.name && d.name.trim());
+    var miss = [];
+    if (!d.name) miss.push('ชื่อ – สกุล ผู้ป่วย');
+    if (!d.hn) miss.push('HN');
+    if (!d.date) miss.push('วันที่');
+    if (!d.ward) miss.push('ตึก (หอผู้ป่วย)');
+    if (!d.ptype) miss.push('ประเภทผู้ป่วย');
+    if (!d.error) miss.push('ความคลาดเคลื่อนทางยา (ติ๊กอย่างน้อย 1 ข้อ)');
+    if (!d.detail) miss.push('รายละเอียดอุบัติการณ์เพิ่มเติม');
+    if (!d.pharmacist) miss.push('เภสัชกรผู้ส่งปรึกษา');
+    return miss;
+  }
+  function checkValid() {
+    var miss = validate();
+    if (!miss.length) return true;
+    alert('กรุณากรอกข้อมูลให้ครบก่อนบันทึก / ออกเลข & พิมพ์:\n\n• ' + miss.join('\n• '));
+    return false;
   }
 
   // บันทึก: ถ้ามีเลขฟอร์มแล้ว = อัปเดตแถวเดิม, ถ้ายังไม่มี = สร้างแถวใหม่ + Sheet ออกเลข
+  // (ตรวจช่องจำเป็นแล้วที่ปุ่มก่อนเรียกฟังก์ชันนี้)
   function save(silent) {
     var data = collect();
-    if (!data.formNo && !(data.name && data.name.trim())) {
-      alert('กรุณากรอกชื่อ-สกุลผู้ป่วยก่อนออกเลข/บันทึก');
-      return Promise.resolve(null);
-    }
     return postJSON(data).then(function (r) {
       if (r && r.ok) {
         setFormNo(r.formNo);
@@ -201,7 +223,6 @@
   // ออกเลขตอนปริ้น: ถ้ายังไม่มีเลข ให้บันทึก(ออกเลข)ก่อน แล้วค่อยพิมพ์
   function issueAndPrint() {
     if (getFormNo() || !url()) { window.print(); return Promise.resolve(); }
-    if (!hasData()) { alert('กรุณากรอกชื่อ-สกุลผู้ป่วยก่อนออกเลข & พิมพ์'); return Promise.resolve(); }
     return save(true).then(function (no) {
       if (!no && !window.confirm('ออกเลข/บันทึกไม่สำเร็จ — พิมพ์โดยไม่มีเลขฟอร์มหรือไม่?')) return;
       window.print();
@@ -282,9 +303,9 @@
 
   function init() {
     var bp = document.getElementById('btnPrint');
-    if (bp) bp.addEventListener('click', function () { runExclusive(bp, 'กำลังออกเลข…', issueAndPrint); });
+    if (bp) bp.addEventListener('click', function () { if (checkValid()) runExclusive(bp, 'กำลังออกเลข…', issueAndPrint); });
     var bs = document.getElementById('btnSave');
-    if (bs) bs.addEventListener('click', function () { runExclusive(bs, 'กำลังบันทึก…', function () { return save(false); }); });
+    if (bs) bs.addEventListener('click', function () { if (checkValid()) runExclusive(bs, 'กำลังบันทึก…', function () { return save(false); }); });
     var bl = document.getElementById('btnLoad');
     if (bl) bl.addEventListener('click', openModal);
 
@@ -304,6 +325,7 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
 
     loadPharmacists();
+    loadWards();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

@@ -23,6 +23,7 @@
     if (nm) nm.style.fontSize = '17px';
     var fno = scope.querySelector('[data-f="formNo"]');
     if (fno) fno.textContent = '—';
+    setDefaults(); // ฟอร์มใหม่หลังล้าง: วันที่=วันนี้, เรียน=แพทย์เจ้าของไข้
     document.dispatchEvent(new Event('consult:cleared')); // ให้ module อื่น (template) รีเซ็ตตาม
   }
 
@@ -36,6 +37,17 @@
       var p = pick.value.split('-'); // YYYY-MM-DD
       field.value = parseInt(p[2], 10) + '/' + parseInt(p[1], 10) + '/' + (parseInt(p[0], 10) + 543);
     });
+  }
+
+  // ค่าเริ่มต้นของฟอร์มใหม่: วันที่ = วันนี้ (พ.ศ.), เรียน = แพทย์เจ้าของไข้ (เฉพาะช่องที่ว่าง)
+  function setDefaults() {
+    var dateEl = document.querySelector('[data-f="date"]');
+    if (dateEl && !dateEl.value.trim()) {
+      var d = new Date();
+      dateEl.value = d.getDate() + '/' + (d.getMonth() + 1) + '/' + (d.getFullYear() + 543);
+    }
+    var toEl = document.getElementById('fldTo');
+    if (toEl && !toEl.value.trim()) toEl.value = 'แพทย์เจ้าของไข้';
   }
 
   // เติมหน่วยท้ายช่องอัตโนมัติ (โฟกัส = ถอดหน่วยเพื่อแก้ง่าย, ออกจากช่อง = เติมกลับ)
@@ -60,6 +72,7 @@
     initDatePicker();
     unitField('[data-f="age"]', 'ปี');
     unitField('[data-f="weight"]', 'kg');
+    setDefaults();
   }
 
   if (document.readyState === 'loading') {
