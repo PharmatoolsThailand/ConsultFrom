@@ -39,6 +39,19 @@
     });
   }
 
+  // จำกัดกล่องข้อความไม่ให้พิมพ์เกินความสูงที่เห็น (เช่น รายละเอียด = 7 บรรทัด)
+  // พอเกินจะเกิด scroll แล้วเนื้อหาที่ล้นหายตอนพิมพ์ → ปฏิเสธการพิมพ์ที่ทำให้ล้น
+  function capToHeight(sel) {
+    var el = document.querySelector(sel);
+    if (!el) return;
+    var last = el.value;
+    el.addEventListener('focus', function () { last = el.value; }); // sync ค่าที่ถูก set มาโดยโปรแกรม (โหลด/template)
+    el.addEventListener('input', function () {
+      if (el.scrollHeight > el.clientHeight) el.value = last; // ล้น → ย้อนกลับค่าเดิม
+      else last = el.value;
+    });
+  }
+
   // ค่าเริ่มต้นของฟอร์มใหม่: วันที่ = วันนี้ (พ.ศ.), เรียน = แพทย์เจ้าของไข้ (เฉพาะช่องที่ว่าง)
   function setDefaults() {
     var dateEl = document.querySelector('[data-f="date"]');
@@ -72,6 +85,8 @@
     initDatePicker();
     unitField('[data-f="age"]', 'ปี');
     unitField('[data-f="weight"]', 'kg');
+    capToHeight('[data-f="detail"]');
+    capToHeight('[data-f="otherDetail"]');
     setDefaults();
   }
 
