@@ -3,14 +3,26 @@
 // <script> so it runs by double-clicking index.html (file://), no build step.
 
 (function () {
-  // Shrink the patient-name input so long names stay on the printed line.
+  // ย่อฟอนต์ช่องชื่อเมื่อชื่อยาวเกินช่อง (ชื่อเต็มต้องอยู่บนบรรทัดเดียวตอนพิมพ์)
+  // เผื่อ 1px: ความกว้างช่องที่ flex คำนวณเป็นทศนิยม (เช่น 133.47) → clientWidth ปัดลงเหลือ 133
+  // แต่ scrollWidth ปัดขึ้นเป็น 134 กลายเป็น "ล้น" ทั้งที่ช่องยังว่าง แล้วย่อรวดเดียวจนถึง 8px
   function growName(el) {
     var fs = 17;
     el.style.fontSize = fs + 'px';
-    while (el.scrollWidth > el.clientWidth && fs > 8) {
+    el.style.paddingBottom = '1px';
+    while (el.scrollWidth > el.clientWidth + 1 && fs > 8) {
       fs -= 0.5;
       el.style.fontSize = fs + 'px';
     }
+    alignNameUnderline(el);
+  }
+
+  // ฟอนต์เล็กลง = กล่อง input เตี้ยลง เส้นใต้จึงลอยขึ้นไม่ตรงกับช่องอื่นในแถว
+  function alignNameUnderline(el) {
+    var ref = document.querySelector('[data-f="hn"]');
+    if (!ref) return;
+    var d = ref.getBoundingClientRect().bottom - el.getBoundingClientRect().bottom;
+    if (d > 0) el.style.paddingBottom = (1 + d) + 'px';
   }
 
   function doClear() {
@@ -20,7 +32,7 @@
     scope.querySelectorAll('textarea').forEach(function (t) { t.value = ''; });
     scope.querySelectorAll('input[type="checkbox"]').forEach(function (c) { c.checked = false; });
     var nm = scope.querySelector('[data-name-field]');
-    if (nm) nm.style.fontSize = '17px';
+    if (nm) growName(nm);
     var fno = scope.querySelector('[data-f="formNo"]');
     if (fno) fno.textContent = '—';
     setDefaults(); // ฟอร์มใหม่หลังล้าง: วันที่=วันนี้, เรียน=แพทย์เจ้าของไข้
