@@ -28,6 +28,16 @@
     var el = q('[data-f="formNo"]');
     if (el) el.setAttribute('data-rev', v || '');
   }
+  // _op = รหัสการบันทึกที่ยังไม่ได้คำตอบชัดเจน (หมดเวลา/หลุด) — กดบันทึกใหม่ใช้รหัสเดิม
+  // server เจอแถวที่มีรหัสนี้แล้ว = เขียนแถวเดิม ไม่ออกเลขใหม่ (ต้นเหตุใบ consult ซ้ำคนละเลข)
+  function getOp() {
+    var el = q('[data-f="formNo"]');
+    return el ? (el.getAttribute('data-op') || '') : '';
+  }
+  function setOp(v) {
+    var el = q('[data-f="formNo"]');
+    if (el) el.setAttribute('data-op', v || '');
+  }
 
   function labelOf(checkbox) {
     var sp = checkbox.parentElement && checkbox.parentElement.querySelector('span');
@@ -92,6 +102,7 @@
     set('[data-f="doctor"]', o.doctor);
     setFormNo(o.formNo);
     setRev(o._rev);
+    setOp('');
 
     qa('[data-f="ptype"]', s).forEach(function (c) {
       c.checked = (o.ptype || '').indexOf(c.getAttribute('data-v')) >= 0;
@@ -107,66 +118,29 @@
     qa('[data-f="resultDetail"]', s).forEach(function (e, i) { e.value = rd[i] || ''; });
   }
 
-  // fetch + timeout กันค้างเมื่อเครือข่ายช้า/หลุด
-  function fetchJSON(u, opts, timeoutMs) {
-    var ctrl = new AbortController();
-    var timer = setTimeout(function () { ctrl.abort(); }, timeoutMs || 15000);
-    opts = opts || {};
-    opts.signal = ctrl.signal;
-    return fetch(u, opts).then(function (r) { return r.json(); })
-      .then(function (j) { clearTimeout(timer); return j; })
-      .catch(function (err) {
-        clearTimeout(timer);
-        if (err && err.name === 'AbortError') throw new Error('หมดเวลาเชื่อมต่อ (เครือข่ายช้า) — ลองใหม่อีกครั้ง');
-        throw err;
-      });
-  }
-
-  // ใช้ text/plain เพื่อเลี่ยง CORS preflight; Apps Script ตอบ Access-Control-Allow-Origin: *
-  // ถ้า server ตอบ busy (มีคนเขียนพร้อมกัน) ให้ลองซ้ำอัตโนมัติ 1 ครั้ง
-  function postJSON(body) {
-    var u = url();
-    if (!u) return Promise.reject(new Error('ยังไม่ได้ตั้งค่า URL ใน js/config.js'));
-    var opts = {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(body)
-    };
-    return fetchJSON(u, opts).then(function (j) {
-      if (j && j.error === 'busy') {
-        return new Promise(function (res) { setTimeout(res, 700); })
-          .then(function () { return fetchJSON(u, opts); });
-      }
-      return j;
-    });
-  }
   function getList(q) {
-    var u = url();
-    if (!u) return Promise.reject(new Error('ยังไม่ได้ตั้งค่า URL ใน js/config.js'));
     var qs = '?action=list&limit=10';
     if (q) qs += '&q=' + encodeURIComponent(q);
-    return fetchJSON(u + qs, null, 15000);
+    return ConsultApi.get(qs);
   }
 
-  // เติมรายชื่อเภสัชกรที่เคยใช้ลง datalist (พิมพ์ชื่อใหม่เองได้ ครั้งหน้าจะขึ้นในรายการเอง)
-  function loadPharmacists() {
-    var u = url(); if (!u) return;
-    fetchJSON(u + '?action=pharmacists').then(function (r) {
-      var dl = document.getElementById('pharmacistList');
-      if (!dl || !r || !r.ok || !r.names) return;
-      dl.innerHTML = '';
-      r.names.forEach(function (n) { var o = document.createElement('option'); o.value = n; dl.appendChild(o); });
-    }).catch(function () {});
+  function fillDatalist(id, arr) {
+    var dl = document.getElementById(id);
+    if (!dl) return;
+    dl.innerHTML = '';
+    arr.forEach(function (n) { var o = document.createElement('option'); o.value = n; dl.appendChild(o); });
   }
-  // เติมชื่อหอผู้ป่วยลง datalist (แก้รายการได้ในชีต "Wards")
+  // เภสัชกรที่เคยใช้ (พิมพ์ชื่อใหม่เองได้ ครั้งหน้าจะขึ้นในรายการเอง)
+  function loadPharmacists() {
+    if (!url()) return;
+    ConsultApi.cachedList('consult_pharmacists', '?action=pharmacists',
+      function (r) { return r.names; }, function (a) { fillDatalist('pharmacistList', a); });
+  }
+  // หอผู้ป่วย (แก้รายการได้ในชีต 'Wards')
   function loadWards() {
-    var u = url(); if (!u) return;
-    fetchJSON(u + '?action=wards').then(function (r) {
-      var dl = document.getElementById('wardList');
-      if (!dl || !r || !r.ok || !r.wards) return;
-      dl.innerHTML = '';
-      r.wards.forEach(function (n) { var o = document.createElement('option'); o.value = n; dl.appendChild(o); });
-    }).catch(function () {});
+    if (!url()) return;
+    ConsultApi.cachedList('consult_wards', '?action=wards',
+      function (r) { return r.wards; }, function (a) { fillDatalist('wardList', a); });
   }
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
@@ -199,7 +173,10 @@
   // (ตรวจช่องจำเป็นแล้วที่ปุ่มก่อนเรียกฟังก์ชันนี้)
   function save(silent) {
     var data = collect();
-    return postJSON(data).then(function (r) {
+    if (!getOp()) setOp(ConsultApi.newOp());
+    data._op = getOp();
+    return ConsultApi.post(data).then(function (r) {
+      setOp('');
       if (r && r.ok) {
         setFormNo(r.formNo);
         setRev(r.rev);
@@ -276,12 +253,17 @@
     });
   }
 
+  // คำค้นเก่าที่ตอบช้ากว่าอาจมาทีหลังแล้วทับผลของคำค้นใหม่ → รับเฉพาะผลของคำค้นล่าสุด
+  var _searchSeq = 0;
   function searchRecords(q) {
+    var seq = ++_searchSeq;
     var box = document.getElementById('loadList');
     if (box) box.innerHTML = '<div class="modal-empty">' + (q ? 'กำลังค้นหา…' : 'กำลังโหลด…') + '</div>';
     getList(q).then(function (r) {
+      if (seq !== _searchSeq) return;
       renderRecords((r && r.ok && r.rows) ? r.rows : []);
     }).catch(function (err) {
+      if (seq !== _searchSeq) return;
       if (box) box.innerHTML = '<div class="modal-empty">โหลดไม่สำเร็จ: ' + esc(err.message) + '</div>';
     });
   }
@@ -323,6 +305,8 @@
     var ov = document.getElementById('loadModal');
     if (ov) ov.addEventListener('click', function (e) { if (e.target === ov) closeModal(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+    document.addEventListener('consult:cleared', function () { setRev(''); setOp(''); });
 
     loadPharmacists();
     loadWards();

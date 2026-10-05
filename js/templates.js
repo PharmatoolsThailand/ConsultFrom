@@ -11,18 +11,7 @@
 
   var _templates = [];
 
-  function fetchJSON(u, opts, ms) {
-    var c = new AbortController();
-    var t = setTimeout(function () { c.abort(); }, ms || 15000);
-    opts = opts || {}; opts.signal = c.signal;
-    return fetch(u, opts).then(function (r) { return r.json(); })
-      .then(function (j) { clearTimeout(t); return j; })
-      .catch(function (e) { clearTimeout(t); if (e && e.name === 'AbortError') throw new Error('หมดเวลาเชื่อมต่อ'); throw e; });
-  }
-  function post(body) {
-    var u = url(); if (!u) return Promise.reject(new Error('ยังไม่ได้ตั้งค่า URL ใน js/config.js'));
-    return fetchJSON(u, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
-  }
+  function post(body) { return ConsultApi.post(body); }
   function toast(msg) {
     var t = el('__toast');
     if (!t) { t = document.createElement('div'); t.id = '__toast'; t.className = 'toast'; document.body.appendChild(t); }
@@ -83,7 +72,7 @@
   function fetchTemplates(selectId, showToast) {
     var u = url();
     if (!u) { if (showToast) alert('ยังไม่ได้ตั้งค่า URL ใน js/config.js'); return Promise.resolve(); }
-    return fetchJSON(u + '?action=templates').then(function (r) {
+    return ConsultApi.get('?action=templates').then(function (r) {
       var arr = (r && r.ok && r.templates) ? r.templates : [];
       writeCache(arr);
       applyTemplates(arr, selectId);
